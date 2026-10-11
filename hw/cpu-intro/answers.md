@@ -14,7 +14,7 @@ Time PID 0 PID 1     CPU IOs
 10    -    RUN        1   0
 ```
 - Reasoning / 理由:两个进程各有 5 条 CPU 指令，CPU占用拉满，没有 I/O 操作。
-- Verified result / 验证结果:
+- Verified result / 验证结果:准确
 - Analysis / 分析:
 
 ## Q2 python3 process-run.py -l 4:100,1:0
@@ -34,7 +34,7 @@ Time PID 0 PID 1      CPU IOs
 11   -  RUN:io_done    1   0
 ```
 - Reasoning / 理由:默认情况下，PID 0 先运行。由于 PID 0 只包含 CPU 指令，它不会因为 I/O 而阻塞。
-- Verified result / 验证结果:
+- Verified result / 验证结果:准确
 - Analysis / 分析:
 
 ## Q3 python3 process-run.py -l 1:0,4:100
@@ -50,7 +50,7 @@ Time PID 0    PID 1       CPU IOs
 7    RUN:io_done -        1   0
 ```
 - Reasoning / 理由:与 Q2 相比，只是交换了进程顺序。PID 0 等待 I/O 时，操作系统可以调度 PID 1 使用 CPU，减少 CPU 空闲时间。
-- Verified result / 验证结果:
+- Verified result / 验证结果:准确
 - Analysis / 分析:
 
 ## Q4 python3 process-run.py -l 1:0,4:100 -S SWITCH_ON_END
@@ -70,7 +70,7 @@ Time PID 0       PID 1     CPU IOs
 11   -           RUN       1   0
 ```
 - Reasoning / 理由:-S SWITCH_ON_END 的作用（当进程做 I/O 时，阻止 CPU 切换）。
-- Verified result / 验证结果:
+- Verified result / 验证结果:准确
 - Analysis / 分析:
 
 ## Q5 python3 process-run.py -l 1:0,4:100 -S SWITCH_ON_IO
@@ -86,7 +86,7 @@ Time PID 0    PID 1       CPU IOs
 7    RUN:io_done -        1   0
 ```
 - Reasoning / 理由:系统默认调用和Q3情况一样
-- Verified result / 验证结果:
+- Verified result / 验证结果:准确
 - Analysis / 分析:
 
 ## Q6 python3 process-run.py -l 3:0,5:100,5:100,5:100 -S SWITCH_ON_IO -I IO_RUN_LATER
@@ -124,8 +124,8 @@ Time PID 0       PID 1    PID 2    PID 3    CPU IOs
 29   RUN:io_done -        -        -        1   0
 ```
 - Reasoning / 理由:PID 0执行完第一次I/O后进入末尾重新排队。
-- Verified result / 验证结果:
-- Analysis / 分析:
+- Verified result / 验证结果:错误
+- Analysis / 分析:run:io和run_io done是一个循环不可缺少其中一项
 
 ## Q7 python3 process-run.py -l 3:0,5:100,5:100,5:100 -S SWITCH_ON_IO -I IO_RUN_IMMEDIATE
 - Prediction / 预测:
@@ -152,8 +152,8 @@ Time PID 0       PID 1    PID 2    PID 3    CPU IOs
 19   RUN:io_done -        -        -        1   0
 ```
 - Reasoning / 理由:IO_RUN_IMMEDIATE 在这种场景下效率明显更高，因为 PID 0 的 I/O 完成时机刚好和其他进程跑完的时机重合，插队后 CPU 和 IO 设备可以一直并行工作，没有任何空闲。
-- Verified result / 验证结果:
-- Analysis / 分析:
+- Verified result / 验证结果:错误
+- Analysis / 分析:run:io和run_io done是一个循环不可缺少其中一项
 
 ## Q8 python3 process-run.py -s 1 -l 3:50,3:50
 - Prediction / 预测:
